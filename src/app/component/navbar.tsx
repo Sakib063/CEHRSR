@@ -13,7 +13,6 @@ function Navbar() {
           <ProjectLogo src="/logo CEHRSR.png" width={50} height={60} alt="project-logo" />
           <h1 className="text-3xl"><a href="index.html">CEHRSR</a></h1>
         </div>
-
         <nav className="space-x-5 ml-auto mr-5">
           <ul className="flex space-x-5">
             <li><a href="#banner">Home</a></li>

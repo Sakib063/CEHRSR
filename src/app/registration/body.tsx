@@ -4,7 +4,6 @@ import React from 'react';
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-console.log('heloooooooooooooooo');
 export default function RegForm() {
     const [firstName,SetFirstName]=useState('');
     const [lastName,SetLastName]=useState('');
@@ -19,7 +18,6 @@ export default function RegForm() {
     const [passwordMatchError,SetPasswordMatchError]=useState(false);
     const router = useRouter();
 
-   
     var user=
         {
             nid,
@@ -39,11 +37,8 @@ export default function RegForm() {
         if(password!=confirmPassword){
             SetPasswordMatchError(true);
             return;
-        };
-        
-        
+        }; 
         console.log('from submit',user)
-
         const response=await fetch('/api/register',{ 
             method:'POST',
             headers:{'Content-Type':'application/json'},
@@ -54,7 +49,6 @@ export default function RegForm() {
             router.push('/login');
         }
     }
-
 
     return (
         <main> 
@@ -111,7 +105,6 @@ export default function RegForm() {
                                 {isLoading && <span>Wait...</span>}
                                 {!isLoading && <span>SignUp</span>}
                             </button>
-                            
                         </div>
                     </form>
                 </div>

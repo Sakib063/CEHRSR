@@ -42,8 +42,7 @@ export async function POST(request) {
     const chain_response = response.data;
     const chain_nid = JSON.stringify(chain_response.result[0]?.data?.json?.nid).replace(/^"|"$/g, '');
     const chain_password = JSON.stringify(chain_response.result[0]?.data?.json?.password).replace(/^"|"$/g, '');
-    const chain_firstname = JSON.stringify(chain_response.result[0]?.data?.json?.firstname).replace(/^"|"$/g, '');
-
+    const chain_firstname = JSON.stringify(chain_response.result[0]?.data?.json?.firstName).replace(/^"|"$/g, '');
     if (chain_nid === form_nid && chain_password === form_password) {
       // Patient verified successfully, generate JWT token
       const token = await new SignJWT({

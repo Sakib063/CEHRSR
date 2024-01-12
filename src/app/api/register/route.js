@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
-export  async function POST(request) {
+export async function POST(request) {
 
   const res = await request.json();
   console.log(res);
@@ -16,12 +16,11 @@ export  async function POST(request) {
   const formData = {
     json: res
   };
-  console.log('formData', formData);
+  // console.log('formData', formData);
 
   try {
     
     const streamName = res.nid;
-
     console.log('creating stream');
     // Create Stream
     const createStreamResponse = await axios.post(
@@ -68,7 +67,7 @@ export  async function POST(request) {
       return NextResponse.json({ message: 'Internal Server Error' });
     } else {
       await subscribeToStream(streamName, multichainConfig);
-      res.status(201).send();
+      res.status(201);
       console.log('Patient Registered Successfully');
     }
 

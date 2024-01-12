@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.5.2",
-    "axios": "^1.6.2",
+    "axios": "^1.6.5",
     "broadcast-channel": "^7.0.0",
     "jose": "^5.2.0",
     "next": "^14.0.4",
