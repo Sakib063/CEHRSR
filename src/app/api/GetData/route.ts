@@ -1,12 +1,13 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextResponse } from 'next/server';
+import axios from 'axios';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse){
+export async function POST(request){
     if(req.method==='POST'){
         const {pid,did,dname,dnum}=req.body;
         const formData={'json':{pid,did,dname,dnum}};
         
         const streamName=pid.toString();
-        const key = 'health'; 
+        const key = 'EHR'; 
 
         const multichainConfig = {
             host: process.env.HOST,

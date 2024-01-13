@@ -30,18 +30,9 @@ export async function POST(request) {
         },
       }
     );
-    const chain_response = response.data;
-    const chain_firstname = JSON.stringify(chain_response.result[0]?.data?.json?.firstName).replace(/^"|"$/g, '');
-    const chain_birthyear = JSON.stringify(chain_response.result[0]?.data?.json?.age).replace(/^"|"$/g, '');
-    const chain_gender = JSON.stringify(chain_response.result[0]?.data?.json?.gender).replace(/^"|"$/g, '');
-    return new NextResponse({
-      status: 200,
-      body: JSON.stringify({
-        chain_firstname,
-        chain_birthyear,
-        chain_gender,
-      }),
-    });
+    const chain_response = response.data.result[0]?.data?.json;
+    delete chain_response['password'];
+    return NextResponse.json({chain_response},{status: 200});
   } 
   catch (error) {
     console.error('Error fetching Multichain stream items:', error.message);

@@ -38,7 +38,6 @@ export async function POST(request) {
     const publishData = await publishResponse.data;
 
     if (publishData) {
-      console.log('LALA')
       console.log(publishData)
     } else {
       console.log(publishData.error)
