@@ -4,8 +4,8 @@ import axios from 'axios';
 export async function POST(request) {
 
   const res = await request.json();
-  console.log(res);
-  const streamName='123123';
+  const streamName=res.patient_id;
+  console.log(streamName);
   const multichainConfig = {
     host: process.env.HOST,
     port: process.env.RPCPORT,
@@ -13,8 +13,23 @@ export async function POST(request) {
     rpcpassword: process.env.RPCPASSWORD,
   };
 
+  const date = new Date();
+  const options = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  };
+  const formattedDate = date.toLocaleString('en-US', options);
+  const key='Entry:'+formattedDate;
+  console.log(key);
   const formData = {
-    json: res
+    json: {
+      ...res,
+      date: formattedDate,
+    }
   };
   console.log('formData', formData);
 
@@ -25,7 +40,7 @@ export async function POST(request) {
       `http://${multichainConfig.host}:${multichainConfig.port}`,
       {
         method: 'publish',
-        params: [streamName, 'EHR', formData],
+        params: [streamName, key, formData],
       },
       {
         headers: {
@@ -37,13 +52,17 @@ export async function POST(request) {
 
     const publishData = await publishResponse.data;
 
-    if (publishData) {
-      console.log(publishData)
-    } else {
-      console.log(publishData.error)
+    if(publishData.result){
+        console.log('Publish successful');
+        return Response.json({status: 200});
+    } 
+    else{
+        console.error('Error publishing to Multichain:', publishData.error);
+        return Response.json({ message: 'Failed to publish to Multichain' });
+      }
+    } 
+    catch (error) {
+      console.error('Error processing request:', error);
+      return Response.json({ message: 'Internal Server Error' });
     }
-  } catch (error) {
-    console.error('Error interacting with Multichain:', error);
-    return NextResponse.json({ message: 'Internal Server Error' });
   }
-}

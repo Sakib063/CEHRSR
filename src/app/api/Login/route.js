@@ -67,8 +67,9 @@ export async function POST(request) {
       // Notify all tabs that the user has logged in
       
       console.log('Patient Verified Successfully');
-      return response;
-    } else {
+      return Response.json({status: 201});
+    } 
+    else {
       // Authentication failed
       console.log('Authentication Failed');
       return NextResponse.json({ success: false });

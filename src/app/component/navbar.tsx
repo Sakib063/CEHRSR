@@ -1,9 +1,14 @@
-"use client" ;
 import ProjectLogo from 'next/image'
-import { useAuth } from "@/hooks/useAuth";
 import Link from 'next/link';
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../api/auth/[...nextauth]/route'
+import { LoginButton, LogoutButton } from '../auth'
+import { User } from '../user'
 
-function Navbar() {
+
+ async function Navbar() {
+  const session  = await getServerSession(authOptions)
+  const type = session?.user?.type || null
   return (
     <div>
       <header className="px-20 py-8 shadow-lg flex items-center justify-between">
@@ -11,6 +16,7 @@ function Navbar() {
           <ProjectLogo src="/logo CEHRSR.png" width={50} height={60} alt="project-logo" />
           <h1 className="text-3xl"><a href="index.html">CEHRSR</a></h1>
         </div>
+
         <nav className="space-x-5 ml-auto mr-5">
           <ul className="flex space-x-5">
             <li><a href="#banner">Home</a></li>
@@ -20,21 +26,25 @@ function Navbar() {
           </ul>
         </nav>
 
-        {auth ? (
+        {session ? (
+          
           // Render content for logged-in users
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-           {/* <Link href={`/WelcomePatient/${encodeURIComponent(JSON.stringify(auth.username))}`}>
-             {JSON.stringify(auth.username)}
-</Link> */}
-
+          
+          <Link href={`/Welcome${type}`}>
+              Dashboard - {(session?.user?.name)}
+            </Link>
+          
 
           </button>
+          
         ) : (
           // Render the login/registration button for non-logged-in users
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
             <a href="/login">Login / Registration</a>
           </button>
         )}
+        {!session ? null : ( <div> <LogoutButton/> </div>) }
       </header>
     </div>
   );

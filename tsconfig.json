@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/registration/body.tsx", "src/app/registration/page.tsx", "src/app/login/body.jsx", "src/app/login/page.jsx", "src/app/api/login/route.js", "src/app/api/register/route.js", "src/app/component/navbar.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/registration/body.tsx", "src/app/registration/page.tsx", "src/app/login/body.jsx", "src/app/login/page.jsx", "src/app/api/login/route.js", "src/app/api/register/route.js", "src/app/component/navbar.tsx", "src/app/api/auth/[...nextauth]/route.ts", "src/libs/prisma.ts", "src/app/page.jsx", "src/app/api/PatientInfo/route.js", "src/app/api/GetData/route.js"],
   "exclude": ["node_modules"]
 }

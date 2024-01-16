@@ -3,10 +3,10 @@ import React from 'react';
 import { useState } from 'react';
 
 const MedicalRecordEntry = () => {
-  var patient_name='';
-  var patient_birthyear='';
-  var patient_gender='';
-  var patient_blood='';
+  const [patient_name, setPatientName] = useState('');
+  const [patient_birthyear, setPatientBirthyear] = useState('');
+  const [patient_gender, setPatientGender] = useState('');
+  const [patient_blood, setPatientBlood] = useState('');
   const [nid, setNid] = useState('');
   const [patientAge, setPatientAge] = useState('');
   const [symptoms, setSymptoms] = useState('');
@@ -20,19 +20,25 @@ const MedicalRecordEntry = () => {
   const getNid = async (e) => {
     e.preventDefault();
     const id = { nid };
-  
-    console.log('Before fetch');
-  
     try {
-      const data = await fetch('/api/PatientInfo', {
+      const response = await fetch('/api/PatientInfo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(id),
-      });
-      console.log('After fetch');
-      console.log(data);
-      setLoading((current) => !current);
-    } catch (error) {
+      });  
+      if(!response.ok){
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      const name=data?.chain_response?.firstName+" "+data?.chain_response?.lastName
+      // console.log(data);
+      setLoading(true);
+      setPatientName(name);
+      setPatientBirthyear(data?.chain_response?.birthyear);
+      setPatientBlood(data?.chain_response?.blood);
+      setPatientGender(data?.chain_response?.gender);
+    } 
+    catch (error) {
       console.error('Error fetching data:', error);
     }
   };
@@ -40,6 +46,7 @@ const MedicalRecordEntry = () => {
   const ehr_submit = async (e) => {
     e.preventDefault();
     const data = {
+      patient_id: nid,
       doctorName: 'John Doe',
       patientAge,
       symptoms,
@@ -48,6 +55,7 @@ const MedicalRecordEntry = () => {
       tests,
       comments,
     };
+    console.log(data);
     try{
       const result = await fetch('/api/EHREntry', {
         method: 'POST',
@@ -56,17 +64,19 @@ const MedicalRecordEntry = () => {
         },
         body: JSON.stringify(data),
       });
+      if(result.ok){
+        setSuccess(true);
+        setPatientAge('');
+        setSymptoms('');
+        setDiagnosis('');
+        setMedicine('');
+        setTests('');
+        setComments('');
+      }
     } 
     catch (error) {
       console.error('Failed to publish:', error);
     }
-
-    setPatientAge('');
-    setSymptoms('');
-    setDiagnosis('');
-    setMedicine('');
-    setTests('');
-    setComments('');
   };
     
 

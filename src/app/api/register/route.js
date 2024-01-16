@@ -65,9 +65,10 @@ export async function POST(request) {
     if (publishData && publishData.error) {
       console.error('Error publishing data:', publishData.error);
       return NextResponse.json({ message: 'Internal Server Error' });
-    } else {
+    } 
+    else {
       await subscribeToStream(streamName, multichainConfig);
-      res.status(201);
+      return Response.json({status: 201});
       console.log('Patient Registered Successfully');
     }
 

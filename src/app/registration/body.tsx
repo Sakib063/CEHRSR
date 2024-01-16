@@ -9,7 +9,8 @@ export default function RegForm() {
     const [lastName,SetLastName]=useState('');
     const [nid,SetNid]=useState('');
     const [gender,SetGender]=useState('');
-    const [age,SetAge]=useState('');
+    const [birthyear,SetBirthYear]=useState('');
+    const [blood,SetBlood]=useState('');
     const [phone,SetPhone]=useState('');
     const [email,SetEmail]=useState('');
     const [password,SetPassword]=useState('');
@@ -24,7 +25,8 @@ export default function RegForm() {
             firstName,
             lastName,
             gender,
-            age,
+            birthyear,
+            blood,
             phone,
             email,
             password,
@@ -37,18 +39,21 @@ export default function RegForm() {
         if(password!=confirmPassword){
             SetPasswordMatchError(true);
             return;
-        }; 
+        };
+        
         console.log('from submit',user)
+
         const response=await fetch('/api/register',{ 
             method:'POST',
             headers:{'Content-Type':'application/json'},
             body: JSON.stringify(user),
         });
-        if(response.status===201){
+        if(response.ok){
             router.refresh();
             router.push('/login');
         }
     }
+
 
     return (
         <main> 
@@ -71,14 +76,50 @@ export default function RegForm() {
                                 value={nid} onChange={(e) => SetNid(e.target.value)} />                          
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="gender" className="text-sm text-black float-left w-32">Gender</label>
-                            <input type="text" className="border border-blue-700 rounded p-1 text-sm flex-1" required 
-                                value={gender} onChange={(e) => SetGender(e.target.value)} />                          
+                        <label className="text-sm text-black float-left w-32">Gender</label>
+                            <div className="flex">
+                                <label className="mr-4">
+                                    <input
+                                        type="radio"
+                                        name="gender"
+                                        value="Male"
+                                        checked={gender === "Male"}
+                                        onChange={(e) => SetGender(e.target.value)}
+                                    />
+                                    <span className="ml-2">Male</span>
+                                </label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="gender"
+                                        value="Female"
+                                        checked={gender === "Female"}
+                                        onChange={(e) => SetGender(e.target.value)}
+                                    />
+                                    <span className="ml-2">Female</span>
+                                </label>
+                            </div>                          
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="age" className="text-sm text-black float-left w-32">Age</label>
+                            <label htmlFor="age" className="text-sm text-black float-left w-32">Birth Year</label>
                             <input type="text" className="border border-blue-700 rounded p-1 text-sm flex-1" required 
-                                value={age} onChange={(e) => SetAge(e.target.value)} />                          
+                                value={birthyear} onChange={(e) => SetBirthYear(e.target.value)} />                          
+                        </div>
+                        <div className="mb-4">
+                        <label htmlFor="blood" className="text-sm text-black float-left w-32">Blood Group</label>
+                            <select
+                                className="border border-blue-700 rounded p-1 text-sm flex-1"
+                                value={blood}
+                                onChange={(e) => SetBlood(e.target.value)}
+                            >
+                                <option value="" disabled>Select Blood Group</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>                          
                         </div>
                         <div className="mb-4">
                             <label htmlFor="phone" className="text-sm text-black float-left w-32">Phone Number</label>
@@ -106,6 +147,11 @@ export default function RegForm() {
                                 {!isLoading && <span>SignUp</span>}
                             </button>
                         </div>
+                        {passwordMatchError && (
+                            <div>
+                                <p className="text-xl flex items-center justify-center text-red-700">Incorrect Credentials</p>
+                            </div>
+                        )}
                     </form>
                 </div>
             </div>
