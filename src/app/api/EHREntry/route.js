@@ -29,6 +29,7 @@ export async function POST(request) {
     json: {
       ...res,
       date: formattedDate,
+      hospital: 'test',
     }
   };
   console.log('formData', formData);

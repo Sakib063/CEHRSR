@@ -31,7 +31,6 @@ const MedicalRecordEntry = () => {
       }
       const data = await response.json();
       const name=data?.chain_response?.firstName+" "+data?.chain_response?.lastName
-      // console.log(data);
       setLoading(true);
       setPatientName(name);
       setPatientBirthyear(data?.chain_response?.birthyear);

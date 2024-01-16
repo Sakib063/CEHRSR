@@ -8,8 +8,6 @@ import { useState } from "react";
 
 
 function Loginbody() {
-
-    
     const router = useRouter();
     const [national_id, setNational_id] = useState('');
     const [password, setPassword] = useState('');
@@ -18,23 +16,18 @@ function Loginbody() {
     const submit = async (e) => {
       e.preventDefault();
       const result =  signIn('credentials', {
-
         national_id: national_id,
         password: password,
         type: "patient",
         redirect: false,
-
       });
-  
-      if (!result.ok) {
-        setError(true);
-      } 
-      else{
-    
+      if(result.ok){
         router.refresh();
         router.push('/WelcomePatient');
-        router.refresh();
       }
+      else{
+        setError(true);
+      } 
     };
 
   return (
