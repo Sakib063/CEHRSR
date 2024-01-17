@@ -6,6 +6,7 @@ export async function POST(request) {
   const res = await request.json();
   const streamName=res.patient_id;
   console.log(streamName);
+  delete(res.patient_id);
   const multichainConfig = {
     host: process.env.HOST,
     port: process.env.RPCPORT,

@@ -3,9 +3,8 @@ import React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
 
-
-
 export default function ConsultationHistory(){
+
     const [date,setDate]=useState('');
     const [hospital,setHospital]=useState('');
     const [doctor,setDoctor]=useState('');
@@ -13,7 +12,7 @@ export default function ConsultationHistory(){
     const EHRInfo=async(e:any)=>{
         const id = {nid:'321'};
         try {
-          const response = await fetch('/api/PatientInfo', {
+          const response = await fetch('/api/EHRFetch',{
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(id),
@@ -22,6 +21,7 @@ export default function ConsultationHistory(){
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
           const data = await response.json();
+          console.log('data from api');
           console.log(data);
         }
         catch (error) {
@@ -32,6 +32,7 @@ export default function ConsultationHistory(){
     useEffect(()=>{
         EHRInfo();
     },[])
+
     return (
         <main className="flex flex-col items-center justify-center">
             <h1 className="text-3xl font-bold border-b-4 border-blue-500 mt-20 mb-5">Consultation History
