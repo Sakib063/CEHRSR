@@ -34,7 +34,7 @@ export async function POST(request) {
     const entry_key = (key) => /^Entry:\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}:\d{2} (AM|PM)$/.test(key);
     const cleaned_response = chain_response.filter((entry) => entry.keys.some(entry_key));
     // console.log(cleaned_response);
-    return NextResponse.json({message:'coming'},{status: 200});
+    return NextResponse.json({cleaned_response},{status: 200});
   } 
   catch (error) {
     console.error('Error fetching Multichain stream items:', error.message);
