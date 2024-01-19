@@ -21,11 +21,13 @@ export async function POST(request) {
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit'
+    second: '2-digit',
+    hour12: false,
   };
   const formattedDate = date.toLocaleString('en-US', options);
-  const key='Entry:'+formattedDate;
-  console.log(key);
+  const keydate = formattedDate.replace(' ', '');
+  const key='Entry:'+keydate;
+  console.log('key',key);
   const formData = {
     json: {
       ...res,

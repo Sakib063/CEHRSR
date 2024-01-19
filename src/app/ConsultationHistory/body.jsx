@@ -2,12 +2,13 @@
 import React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import Link from 'next/link';
+const id = {nid:'321'};
 
 export default function ConsultationHistory(){
     const [consultations, setConsultations] = useState([]);
 
     const EHRInfo=async(e)=>{
-        const id = {nid:'321'};
         try {
           const response = await fetch('/api/EHRFetch',{
             method: 'POST',
@@ -32,13 +33,27 @@ export default function ConsultationHistory(){
             } 
         }
         catch (error) {
-        console.error('Error fetching data:', error);
+            console.error('Error fetching data:', error);
         }
     }
 
-    const view_ehr=async(e)=>{
-        const entry={key};
-
+    const view_ehr=async(key,id)=>{
+        const request={key,id}
+        try {
+          const response = await fetch('/api/EHRDetails',{
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(request),
+          });  
+          if(!response.ok){
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log(data);
+        }
+        catch (error) {
+            console.error('Error fetching data:', error);
+        }
     } 
 
     useEffect(()=>{
@@ -65,7 +80,7 @@ export default function ConsultationHistory(){
                                 <td className="text-md px-8 py-4 border">{consultation.date}</td>
                                 <td className="text-md px-8 py-4 border">{consultation.hospital}</td>
                                 <td className="text-md px-8 py-4 border">{consultation.doctor}</td>
-                                <td onClick={view_ehr} className="text-md px-8 py-4 border"><button className="bg-blue-500 text-white rounded-full p-2 w-40 hover:bg-blue-700">
+                                <td onClick={()=>view_ehr(consultation.date,id)} className="text-md px-8 py-4 border"><button className="bg-blue-500 text-white rounded-full p-2 w-40 hover:bg-blue-700">
                                     View Details
                                 </button></td>
                             </tr>

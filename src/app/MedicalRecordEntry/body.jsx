@@ -11,8 +11,12 @@ const MedicalRecordEntry = () => {
   const [patientAge, setPatientAge] = useState('');
   const [symptoms, setSymptoms] = useState('');
   const [diagnosis, setDiagnosis] = useState('');
-  const [medicine, setMedicine] = useState('');
-  const [tests, setTests] = useState('');
+  const [subdiagnosis, setSubDiagnosis] = useState('');
+  const [treatment, setTreatment] = useState('');
+  const [subtreatment, setSubTreatment] = useState('');
+  const [determination, setDetermination] = useState('');
+  const [type, setType] = useState('');
+  const [findings, setFindings] = useState('');
   const [comments, setComments] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -50,8 +54,12 @@ const MedicalRecordEntry = () => {
       patientAge,
       symptoms,
       diagnosis,
-      medicine,
-      tests,
+      subdiagnosis,
+      treatment,
+      subtreatment,
+      determination,
+      type,
+      findings,
       comments,
     };
     console.log(data);
@@ -68,8 +76,12 @@ const MedicalRecordEntry = () => {
         setPatientAge('');
         setSymptoms('');
         setDiagnosis('');
-        setMedicine('');
-        setTests('');
+        setSubDiagnosis('');
+        setDetermination('');
+        setTreatment('');
+        setSubTreatment('');
+        setType('');
+        setFindings('');
         setComments('');
       }
     } 
@@ -132,26 +144,54 @@ const MedicalRecordEntry = () => {
               />
             </div>
             <div className="py-2">
-              <label className="text-l font-bold px-2 ">Diagnosis:</label>
+              <label className="text-l font-bold px-2 ">Diagnosis Catagory:</label>
               <textarea
                 className="border-2 border-gray-300 rounded-lg w-full p-2"
-                placeholder="Enter Diagnosis" onChange={ (e) => { setDiagnosis(e.target.value)}}
+                placeholder="Enter Diagnosis Catagory" onChange={ (e) => { setDiagnosis(e.target.value)}}
               />
             </div>
             <div className="py-2">
-              <label className="text-l font-bold px-2  ">Medicine:</label>
-              <input
+              <label className="text-l font-bold px-2 ">Diagnosis Sub Catagory:</label>
+              <textarea
                 className="border-2 border-gray-300 rounded-lg w-full p-2"
-                type="text"
-                placeholder="Enter Prescribed Medicine" onChange={(e) => { setMedicine(e.target.value) }}
+                placeholder="Enter Diagnosis Sub Catagory" onChange={ (e) => { setSubDiagnosis(e.target.value)}}
+              />
+            </div>
+            <div className="py-2">
+              <label className="text-l font-bold px-2 ">Treatment Catagory:</label>
+              <textarea
+                className="border-2 border-gray-300 rounded-lg w-full p-2"
+                placeholder="Enter Treatment Catagory" onChange={ (e) => { setTreatment(e.target.value)}}
+              />
+            </div>
+            <div className="py-2">
+              <label className="text-l font-bold px-2 ">Treatment Sub Catagory:</label>
+              <textarea
+                className="border-2 border-gray-300 rounded-lg w-full p-2"
+                placeholder="Enter Treatment Sub Catagory" onChange={ (e) => { setSubTreatment(e.target.value)}}
+              />
+            </div>
+            <div className="py-2">
+              <label className="text-l font-bold px-2 ">Determination:</label>
+              <textarea
+                className="border-2 border-gray-300 rounded-lg w-full p-2"
+                placeholder="Enter Determination" onChange={ (e) => { setDetermination(e.target.value)}}
               />
             </div>
             <div className="py-4">
-              <label className="text-l font-bold px-2 ">Tests:</label>
+              <label className="text-l font-bold px-2 ">Type:</label>
               <input
                 className="border-2 border-gray-300 rounded-lg w-full p-2 "
                 type="text"
-                placeholder="Enter Suggested Tests" onChange={(e) => {  setTests(e.target.value) }}
+                placeholder="Enter Type" onChange={(e) => {  setType(e.target.value) }}
+              />
+            </div>
+            <div className="py-4">
+              <label className="text-l font-bold px-2 ">Findings:</label>
+              <input
+                className="border-2 border-gray-300 rounded-lg w-full p-2 "
+                type="text"
+                placeholder="Enter Findings" onChange={(e) => {  setFindings(e.target.value) }}
               />
             </div>
             <div className="py-2">
