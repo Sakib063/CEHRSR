@@ -1,8 +1,10 @@
-import Main from "./body";
+import EHRData from "./body";
 
 const page = () => {
     return(
-        <Main/>
+        <main>
+            <EHRData/>
+        </main>
     );
 }
 

@@ -2,11 +2,12 @@
 import React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import Link from 'next/link';
+import { useRouter } from "next/navigation";
 const id = {nid:'321'};
 
 export default function ConsultationHistory(){
     const [consultations, setConsultations] = useState([]);
+    const router = useRouter();
 
     const EHRInfo=async(e)=>{
         try {
@@ -38,22 +39,7 @@ export default function ConsultationHistory(){
     }
 
     const view_ehr=async(key,id)=>{
-        const request={key,id}
-        try {
-          const response = await fetch('/api/EHRDetails',{
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(request),
-          });  
-          if(!response.ok){
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          const data = await response.json();
-          console.log(data);
-        }
-        catch (error) {
-            console.error('Error fetching data:', error);
-        }
+        router.push(`/ConsultationHistory/ViewEHR?id=${id.nid}&key=${key}`);
     } 
 
     useEffect(()=>{

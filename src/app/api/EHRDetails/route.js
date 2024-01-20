@@ -5,7 +5,7 @@ export async function POST(request) {
   try {
     const req = await request.json();
     console.log(req);
-    const streamName = req.id.nid;
+    const streamName = req.id;
     var key = req.key;
     key = 'Entry:'+key.replace(' ', '');
     console.log(key);

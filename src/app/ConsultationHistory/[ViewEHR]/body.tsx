@@ -1,6 +1,37 @@
+'use client';
 import React from "react";
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
-const Main = () => {
+export default function EHRData(){
+    const params = useSearchParams();
+    const id = params.get('id');
+    const key = params.get('key');
+
+    const view_ehr=async(e:any)=>{
+        const request={id,key};
+        try {
+            const response = await fetch('/api/EHRDetails',{
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(request),
+            });  
+            if(!response.ok){
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            var data = await response.json();
+            console.log(data?.chain_response?.type);
+        }
+        catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+    useEffect(()=>{
+        view_ehr();
+    },[])
+
     return(
         <section className="py-1 bg-blueGray-50 mt-40">
             <div className="w-full lg:w-8/12 px-4 mx-auto mt-6">
@@ -149,5 +180,3 @@ const Main = () => {
         </section>
     )
 }
-
-export default Main;
