@@ -160,12 +160,12 @@ export default function Main() {
             </div>
             <div className="mb-4">
               <label htmlFor="assoc_hospital_id" className="text-sm text-black float-left w-42 pr-8">
-                Associated Hospital ID
+                Associated <br /> Hospital ID
               </label>
               <input
                 type="text"
                 id="assoc_hospital_id"
-                className="border border-blue-700 rounded p-1 text-sm flex-1"
+                className="border border-blue-700 rounded p-1 ml-7 text-sm flex-1"
                 required
                 onChange={handleInputChange}
               />

@@ -22,7 +22,7 @@ export default function EHRData(){
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             var data = await response.json();
-            console.log(data?.chain_response?.type);
+            console.log(data?.chain_response);
         }
         catch (error) {
             console.error('Error fetching data:', error);

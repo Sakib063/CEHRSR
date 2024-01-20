@@ -24,6 +24,7 @@ export async function POST(request) {
     second: '2-digit',
     hour12: false,
   };
+  
   const formattedDate = date.toLocaleString('en-US', options);
   const keydate = formattedDate.replace(' ', '');
   const key='Entry:'+keydate;

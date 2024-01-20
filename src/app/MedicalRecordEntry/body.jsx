@@ -24,26 +24,26 @@ const MedicalRecordEntry = () => {
   const getNid = async (e) => {
     e.preventDefault();
     const id = { nid };
-    try {
-      const response = await fetch('/api/PatientInfo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(id),
-      });  
-      if(!response.ok){
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      try {
+        const response = await fetch('/api/PatientInfo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(id),
+        });  
+        if(!response.ok){
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        const name=data?.chain_response?.firstName+" "+data?.chain_response?.lastName
+        setLoading(true);
+        setPatientName(name);
+        setPatientBirthyear(data?.chain_response?.birthyear);
+        setPatientBlood(data?.chain_response?.blood);
+        setPatientGender(data?.chain_response?.gender);
+      } 
+      catch (error) {
+        console.error('Error fetching data:', error);
       }
-      const data = await response.json();
-      const name=data?.chain_response?.firstName+" "+data?.chain_response?.lastName
-      setLoading(true);
-      setPatientName(name);
-      setPatientBirthyear(data?.chain_response?.birthyear);
-      setPatientBlood(data?.chain_response?.blood);
-      setPatientGender(data?.chain_response?.gender);
-    } 
-    catch (error) {
-      console.error('Error fetching data:', error);
-    }
   };
   
   const ehr_submit = async (e) => {
@@ -103,10 +103,9 @@ const MedicalRecordEntry = () => {
           type="text" 
           placeholder="Patient ID" value={nid}
           onChange = { (e)=> { setNid(e.target.value) }}
+          required
           />
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mx-4 rounded"
-            onClick={getNid}
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mx-4 rounded"
           >
           Search
           </button>
@@ -133,6 +132,7 @@ const MedicalRecordEntry = () => {
                 className="border-2 border-gray-300 rounded-lg w-full p-2"
                 type="text"
                 placeholder="Enter Patient Age" onChange = { (e)=> { setPatientAge(e.target.value) }}
+                required
               />
             </div>
             <div className="pt-5 pb-3">
@@ -141,6 +141,7 @@ const MedicalRecordEntry = () => {
                 className="border-2 border-gray-300 rounded-lg w-full p-2"
                 type="text"
                 placeholder="Enter Symptoms" onChange = { (e)=> { setSymptoms(e.target.value) }}
+                required
               />
             </div>
             <div className="py-2">
@@ -148,6 +149,7 @@ const MedicalRecordEntry = () => {
               <textarea
                 className="border-2 border-gray-300 rounded-lg w-full p-2"
                 placeholder="Enter Diagnosis Catagory" onChange={ (e) => { setDiagnosis(e.target.value)}}
+                required
               />
             </div>
             <div className="py-2">
@@ -155,6 +157,7 @@ const MedicalRecordEntry = () => {
               <textarea
                 className="border-2 border-gray-300 rounded-lg w-full p-2"
                 placeholder="Enter Diagnosis Sub Catagory" onChange={ (e) => { setSubDiagnosis(e.target.value)}}
+                required
               />
             </div>
             <div className="py-2">
@@ -162,6 +165,7 @@ const MedicalRecordEntry = () => {
               <textarea
                 className="border-2 border-gray-300 rounded-lg w-full p-2"
                 placeholder="Enter Treatment Catagory" onChange={ (e) => { setTreatment(e.target.value)}}
+                required
               />
             </div>
             <div className="py-2">
@@ -169,6 +173,7 @@ const MedicalRecordEntry = () => {
               <textarea
                 className="border-2 border-gray-300 rounded-lg w-full p-2"
                 placeholder="Enter Treatment Sub Catagory" onChange={ (e) => { setSubTreatment(e.target.value)}}
+                required
               />
             </div>
             <div className="py-2">
@@ -176,6 +181,7 @@ const MedicalRecordEntry = () => {
               <textarea
                 className="border-2 border-gray-300 rounded-lg w-full p-2"
                 placeholder="Enter Determination" onChange={ (e) => { setDetermination(e.target.value)}}
+                required
               />
             </div>
             <div className="py-4">
@@ -184,6 +190,7 @@ const MedicalRecordEntry = () => {
                 className="border-2 border-gray-300 rounded-lg w-full p-2 "
                 type="text"
                 placeholder="Enter Type" onChange={(e) => {  setType(e.target.value) }}
+                required
               />
             </div>
             <div className="py-4">
@@ -192,6 +199,7 @@ const MedicalRecordEntry = () => {
                 className="border-2 border-gray-300 rounded-lg w-full p-2 "
                 type="text"
                 placeholder="Enter Findings" onChange={(e) => {  setFindings(e.target.value) }}
+                required
               />
             </div>
             <div className="py-2">
@@ -199,6 +207,7 @@ const MedicalRecordEntry = () => {
               <textarea
                 className="border-2 border-gray-300 rounded-lg w-full p-2"
                 placeholder="Enter Comments" onChange={(e) => { setComments(e.target.value) }}
+                required
               />
               </div>
               <div> 

@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 
 export async function POST(req, res) {
-  console.log(req.body);
   if (req.method === 'POST') {
     const { nid, password } = req.body;
     const formData = { json: { nid, password } };

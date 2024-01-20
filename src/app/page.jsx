@@ -8,8 +8,6 @@ export default async function Home() {
   return (
     <main>
       <LoginButton />
-      
-      
       <h2>Server Session</h2>
       <pre>{JSON.stringify(session)}</pre>
       <LogoutButton />      
@@ -18,10 +16,6 @@ export default async function Home() {
     </main>
   )
 }
-
-
-
-
 // "use client" ;
 
 // import Image from 'next/image'
