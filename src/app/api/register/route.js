@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
-export async function POST(request) {
+
+
+export  async function POST(request) {
 
   const res = await request.json();
   console.log(res);
 
+  
+  
   const multichainConfig = {
     host: process.env.HOST,
     port: process.env.RPCPORT,
@@ -13,14 +17,16 @@ export async function POST(request) {
     rpcpassword: process.env.RPCPASSWORD,
   };
 
+
   const formData = {
     json: res
   };
-  // console.log('formData', formData);
+  console.log('formData', formData);
 
   try {
     
     const streamName = res.nid;
+
     console.log('creating stream');
     // Create Stream
     const createStreamResponse = await axios.post(
@@ -65,10 +71,7 @@ export async function POST(request) {
     if (publishData && publishData.error) {
       console.error('Error publishing data:', publishData.error);
       return NextResponse.json({ message: 'Internal Server Error' });
-    } 
-    else {
-      await subscribeToStream(streamName, multichainConfig);
-      return Response.json({status: 201});
+    } else {
       console.log('Patient Registered Successfully');
     }
 
@@ -76,28 +79,5 @@ export async function POST(request) {
   } catch (error) {
     console.error('Error interacting with Multichain:', error);
     return NextResponse.json({ message: 'Internal Server Error' });
-  }
-}
-
-async function subscribeToStream(streamName , multichainConfig) {
-  const subscribeResponse = await axios.post(
-    `http://${multichainConfig.host}:${multichainConfig.port}`,
-    {
-      method: 'subscribe',
-      params: [streamName],
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Basic ' + Buffer.from(`${multichainConfig.rpcuser}:${multichainConfig.rpcpassword}`).toString('base64'),
-      },
-    }
-  );
-
-  if (subscribeResponse.status !== 200) {
-    throw new Error(`HTTP error subscribing to stream! Status: ${subscribeResponse.status}`);
-  }
-  else {
-    console.log("subscribed to stream");
   }
 }

@@ -89,7 +89,29 @@ const MedicalRecordEntry = () => {
       console.error('Failed to publish:', error);
     }
   };
-    
+  
+  const exit=async(e)=>{
+    const request=nid;
+    try{
+      const response = await fetch('/api/RemoveAccess',{
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(request),
+      });  
+      if(!response.ok){
+          throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      session.user.auth = true
+      setId(false);
+      let d = updateSession();
+      setData(d);
+      console.log("Client Session", session?.user?.auth);
+    }
+    catch (error) {
+        console.error('Error fetching data:', error);
+    }
+  }
 
   return (
     <div>
@@ -216,10 +238,12 @@ const MedicalRecordEntry = () => {
                 </button>
             </div>
             </form>
-
             {success && (
               <div className="p-4 bg-green-200 rounded-md w-4/5 ">
                 Record Successfully Saved.
+                <button onClick={exit} className="bg-red-500 hover:bg-red-800 text-white font-bold py-2 px-4 mx-4 rounded float-right">
+                    Exit 
+                </button>
               </div>
             )}
 

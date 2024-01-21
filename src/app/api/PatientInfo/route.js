@@ -3,12 +3,12 @@ import axios from 'axios';
 
 export async function POST(request) {
   try {
-    const req = await request.json();
-    const form_nid = req.nid;
-    const streamName = form_nid;
-    const key = 'patientinfo';
-    console.log(req);
-    console.log('streamName', streamName);
+    // const req = await request.json();
+    // const form_nid = req.nid;
+    // const streamName = form_nid;
+    const key = 'EHR';
+    // console.log(req);
+    // console.log('streamName', streamName);
 
     const multichainConfig = {
       host: process.env.HOST,
@@ -22,7 +22,7 @@ export async function POST(request) {
       `http://${multichainConfig.host}:${multichainConfig.port}`,
       {
         method: 'liststreamkeyitems',
-        params: [streamName,key],
+        params: ['80272410', 'patientinfo'], // Corrected this line
       },
       {
         headers: {

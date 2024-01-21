@@ -66,7 +66,7 @@ CredentialsProvider({
      {
 
         const user = await patientAuthProvider(credentials);
-        return Promise.resolve(user);
+        return user;
   }
     }}
 ),
@@ -74,7 +74,7 @@ CredentialsProvider({
 
   ],
   pages: {
-    signIn: '/login',
+    signIn: '/signin',
     
   },
  
@@ -86,8 +86,8 @@ CredentialsProvider({
           ...session.user,
           id: token.id,
           type: token.type,
-          randomKey: token.randomKey
-        }
+          randomKey: token.randomKey,
+          auth: token.auth !== undefined ? token.auth : false,        }
       }
     },
     jwt: ({ token, user }) => {
@@ -97,6 +97,7 @@ CredentialsProvider({
           ...token,
           id: u.id,
           type: u.type,
+          auth: u.auth ,
           
         }
       }

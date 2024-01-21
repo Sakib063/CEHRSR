@@ -1,13 +1,27 @@
 'use client';
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useRouter } from "next/navigation";
-const id = {nid:'321'};
+import { useSession } from "next-auth/react";
+import Loading from '../loading'
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+
+
+    
+
 
 export default function ConsultationHistory(){
-    const [consultations, setConsultations] = useState([]);
     const router = useRouter();
+    
+    const params = useSearchParams();
+    const id ={nid:params.get('nid')} 
+    console.log(id);
+    let { data: session } = useSession();
+    console.log("Session", session?.user?.auth);
+
+    const [consultations, setConsultations] = useState([]);
 
     const EHRInfo=async(e)=>{
         try {
@@ -22,6 +36,7 @@ export default function ConsultationHistory(){
           const data = await response.json();
           const ehr=data?.cleaned_response;
           const consultation_date=ehr.map((item)=>{
+            console.log(item.data.json);
             return(item.data.json);
           }); 
           if (consultation_date && consultation_date.length > 0) {
@@ -47,6 +62,8 @@ export default function ConsultationHistory(){
     },[])
 
     return (
+        <Suspense fallback={<Loading/>}>
+
         <main className="flex flex-col items-center justify-center">
             <h1 className="text-3xl font-bold border-b-4 border-blue-500 mt-20 mb-5">Consultation History
             </h1>
@@ -62,6 +79,8 @@ export default function ConsultationHistory(){
                     </thead>
                     <tbody>
                         {consultations.map((consultation, index) => (
+                          
+
                             <tr key={index} className="hover:bg-gray-50">
                                 <td className="text-md px-8 py-4 border">{consultation.date}</td>
                                 <td className="text-md px-8 py-4 border">{consultation.hospital}</td>
@@ -70,18 +89,23 @@ export default function ConsultationHistory(){
                                     View Details
                                 </button></td>
                             </tr>
+                            
                         ))}
                     </tbody>
                 </table>
             </div>
             <div className="flex mt-4">
+                <Link href={'/PatientHistory'}>
                 <button className="bg-blue-500 text-white px-4 py-2 mr-10 rounded">
                     Back to Previous Page
                 </button>
+                </Link>
                 <button className="bg-blue-500 text-white px-4 py-2 rounded">
                     Summarized Report
                 </button>
             </div>
         </main>
+        </Suspense>
+
     )
 }

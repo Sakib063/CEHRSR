@@ -1,9 +1,13 @@
+import { Suspense } from 'react'
 import Navbar from './component/navbar'
 import './globals.css'
 import { Providers } from './providers'
+import Loading from './loading'
+
 
 export const metadata = {
   title: 'CEHRSR',
+  description: 'CEHRSR'
 }
 
 export default function RootLayout({
@@ -15,8 +19,11 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Providers>
+        <Suspense fallback={<Loading/>}>
+
           <Navbar />
           {children}
+          </Suspense>
           </Providers>
       </body>
     </html>

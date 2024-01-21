@@ -1,6 +1,0 @@
-Create Multichain Servers:
-
-Step-1: Open command prompt in the multichain folder.
-Step 2: 
-
-Link: https://www.multichain.com/getting-started/ 

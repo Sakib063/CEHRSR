@@ -1,116 +1,209 @@
-'use client';
-
-import React from 'react';
-
-import { useState } from 'react';
-
-
-
+"use client";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { collection, getDocs, addDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
+import Image from "next/image";
+import Link from "next/link";
+import updateSession from "../updateSession";
 
 const PatientHistory = () => {
-  
-  const [data, setData] = useState([]);
-  const [NID, setNID] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState(false);
+  const [NID, setNID] = useState("");
+  const [OTP, setOTP] = useState("");
+  const [nid, setNid] = useState("");
   const [id, setId] = useState(false);
-  
-  async function MedicalHistory () {
-    setLoading(true);
-    
+  const [generatedOTP, setGeneratedOTP] = useState("");
+  const router = useRouter();
+  const { data: session, update } = useSession();
+
+  useEffect(() => {
+    console.log("Client Session", session?.user?.auth);
+    setData(session?.user?.auth);
+    if (typeof window !== "undefined") {
+      const storedNid = localStorage.getItem("nid");
+      if (storedNid) {
+        setNid(storedNid);
+        
+      }
+    }
+  }, [session]);
+
+  const generateOTP = () => {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedOTP(otp);
+    console.log("OTP", otp);
+    return otp;
+  };
+
+  const verifyOTP = () => {
+    return OTP === generatedOTP;
+  };
+
+  const sendOtpToFirestore = async (otp, nid) => {
     try {
-      const response = await fetch('http://localhost:8000/get');
-      if (response.ok) {
-        const patientData = await response.json();
-        const extractedData = patientData.map(item => item.data.json);
-        
-        // Reverse the order of the array
-        const reversedData = extractedData.reverse();
-        
-        console.log(reversedData);
-        setData(reversedData);
-        setTimeout(() => {
-          setId(true);
-        }, 800);
-        
-        console.log(data);
+      const otpCollectionRef = collection(db, nid);
+      const collectionSnapshot = await getDocs(otpCollectionRef);
+
+      if (collectionSnapshot.empty) {
+        await addDoc(otpCollectionRef, { otp: otp });
       } else {
-        console.log(response)
-        console.log(typeof(response))
-        console.error('Failed to fetch patient data');
+        await addDoc(otpCollectionRef, { otp: otp });
       }
     } catch (error) {
-     
-      console.error('Fetch error:', error);
-    } finally {
-      setTimeout(() => {
-        setLoading(false);
-      }, 2000);
-      
+      console.error("Error adding OTP: ", error.message);
     }
-    setNID(''); 
+  };
+
+  async function MedicalHistory() {
+
+    try {
+      const otp = generateOTP();
+      await sendOtpToFirestore(otp, NID);
+      setId(true);
+      
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+
+    setNID("");
   }
 
+  const handleVerifyOTP = async() => {
+    const request=nid;
+    if (verifyOTP()) {
+      try{
+        const response = await fetch('/api/AllowAccess',{
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(request),
+        });  
+        if(!response.ok){
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        session.user.auth = true
+        setId(false);
+        let d = updateSession();
+        setData(d);
+        console.log("Client Session", session?.user?.auth);
+      }
+      catch (error) {
+          console.error('Error:', error);
+      }
+    } else {
+      console.log("Invalid OTP");
+    }
+  };
+
   return (
-    <div>
-
+    <div className="">
+      <header className="my-20">
+        <h1 className="text-center font-extrabold text-sky-700 tracking-tight text-6xl">
+          Patient Information
+        </h1>
+      </header>
       <div className="bg-white flex justify-center items-center h-auto border-m mt-10">
-        
-        <label className="p-5 text-xl font-bold">
-          Enter NID no. of patient:
-        </label>
-        <input
-          className="bg-blue-100 border-2 h-14 rounded-xl justify-center px-6"
-          onChange={(e) => {
-            setNID(e.target.value);
-          }}
-          type="text"
-          placeholder="NID no."
-          value={NID}
-        />
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mx-4 rounded "
-          onClick={MedicalHistory}
-        >
-          Search
-        </button>
+        <table>
+          <tbody className="">
+            <tr className="">
+              <td className="text-md px-10 py-5 ">
+                <label
+                  className="block font-serif text-blueGray-600 text-xl font-bold mb-2"
+                  htmlFor="grid-password"
+                >
+                  Enter Patient's NID
+                </label>
+              </td>
+              <td className="text-md px-10 py-5 ">
+                <input
+                  className="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5  w-80 ease-linear transition-all duration-150"
+                  onChange={(e) => {
+                    setNid(e.target.value)
+                    setNID(e.target.value);
+                  }}
+                  type="text"
+                  placeholder="NID no."
+                  value={NID}
+                />
+              </td>
+              <td className="text-md px-10 py-5 ">
+                <button
+                  className=" inline-block w-full rounded bg-primary px-6 pt-2.5 pb-2 text-sm font-medium uppercase leading-normal bg-blue-500 text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 "
+                  onClick={MedicalHistory}
+                >
+                  Search
+                </button>
+              </td>
+            </tr>
+           
+            {id ? (
+              <tr className="">
+                <td className="text-md px-10 py-5 ">
+                  <label
+                    className="block font-serif text-blueGray-600 text-xl font-bold mb-2"
+                    htmlFor="grid-password"
+                  >
+                    Enter OTP
+                  </label>
+                </td>
+                <td className="text-md px-10 py-5 ">
+                  <input
+                    className="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5  w-80 ease-linear transition-all duration-150"
+                    onChange={(e) => {
+                      setOTP(e.target.value);
+                    }}
+                    type="text"
+                    placeholder="OTP"
+                    value={OTP}
+                  />
+                </td>
+                <td className="text-md px-10 py-5 ">
+                  <button
+                    className="inline-block w-full rounded bg-primary px-6 pt-2.5 pb-2 text-sm font-medium uppercase leading-normal bg-blue-500 text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600"
+                    onClick={handleVerifyOTP}
+                  >
+                    Verify OTP
+                  </button>
+                </td>
+              </tr>
+            ) : null}
+          </tbody>
+        </table>
       </div>
 
-      <div className="  w-1/4 float-right rounded-md ">
-            { id ? (
-                  <div className='py-3 font-bold'>
-                    <p className='py-1 md:text-s'>Patient Name: John Doe</p>
-                    <p className='py-1 md:text-s'>Patient Age: 25</p>
-                    <p className='py-1 md:text-s'>Patient NID: 58556802</p>
-                  </div>
-                ): null }
+      
+      {  data ? ( 
+       <div className="flex items-center justify-center">
+       {/* <Link href={`/ConsultationHistory?${nid}`}> */}
+       <button onClick={() => router.push(`/ConsultationHistory?nid=${nid}`)}
+           className="flex flex-col items-center justify-center w-500 h-500 border border-blue-600 text-blue font-bold px-20 py-10 m-10 rounded-md hover:bg-blue-200"
+       >
+           <Image src={"/consulting.png"} alt="consulting" id="consulting" height={200} width={130} />
 
-          </div>
+            Patient's Previous Record
+       </button>
+       {/* </Link> */}
+       <Link href={`/MedicalRecordEntry`}>
+       <button
+           className="flex flex-col items-center justify-center w-400 h-400 border border-blue-600 text-blue font-bold px-20 py-10 m-10 rounded-md hover:bg-blue-200"
+       >
+           <Image src={"/diagnostic.png"} alt="diagnosis" id="diagnosis" height={200} width={130} />
 
-      <div className="w-3/4 mx-auto h-3/4 border-m rounded-m flex row justify-center items-center ml-48">
-  {loading ? (
-    <div className="text-center p-4">Loading...</div>
-  ) : data.length > 0 ? (
-    <div className="bg-white  shadow-inner mx-auto p-8 border-m my-5 w-3/4 rounded-xl">
-      <div className="p-4">
-  <h2 className="text-xl font-bold">Patient Information</h2>
+           New Diagnosis Reports 
+       </button>
+       </Link>
+   </div>
   
-          {data.map((item) => (
-          <div className='bg-blue-100 h-auto w-3/4 m-4 p-4 rounded-md font-bold'>
-        <p>date: 2/11/23 </p>
-        <p key={item.NID}> Diagnosis {item.diagnosis}</p>
-        <p key={item.NID}> Medicine {item.medicine}</p>
-        <p key={item.NID}> Tests {item.test}</p>
-          
-          </div>
-         ))}
 
-      </div>
+
+
+
+     ) : null}
+
     </div>
-  ) : null}
-</div>
-</div>
   );
 };
-
 
 export default PatientHistory;

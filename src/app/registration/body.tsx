@@ -4,13 +4,13 @@ import React from 'react';
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+console.log('heloooooooooooooooo');
 export default function RegForm() {
     const [firstName,SetFirstName]=useState('');
     const [lastName,SetLastName]=useState('');
     const [nid,SetNid]=useState('');
     const [gender,SetGender]=useState('');
-    const [birthyear,SetBirthYear]=useState('');
-    const [blood,SetBlood]=useState('');
+    const [age,SetAge]=useState('');
     const [phone,SetPhone]=useState('');
     const [email,SetEmail]=useState('');
     const [password,SetPassword]=useState('');
@@ -19,14 +19,14 @@ export default function RegForm() {
     const [passwordMatchError,SetPasswordMatchError]=useState(false);
     const router = useRouter();
 
+   
     var user=
         {
             nid,
             firstName,
             lastName,
             gender,
-            birthyear,
-            blood,
+            age,
             phone,
             email,
             password,
@@ -41,6 +41,7 @@ export default function RegForm() {
             return;
         };
         
+        
         console.log('from submit',user)
 
         const response=await fetch('/api/register',{ 
@@ -48,11 +49,12 @@ export default function RegForm() {
             headers:{'Content-Type':'application/json'},
             body: JSON.stringify(user),
         });
-        if(response.ok){
+        if(response.status===201){
             router.refresh();
             router.push('/login');
         }
     }
+
 
     return (
         <main> 
@@ -75,50 +77,14 @@ export default function RegForm() {
                                 value={nid} onChange={(e) => SetNid(e.target.value)} />                          
                         </div>
                         <div className="mb-4">
-                        <label className="text-sm text-black float-left w-32">Gender</label>
-                            <div className="flex">
-                                <label className="mr-4">
-                                    <input
-                                        type="radio"
-                                        name="gender"
-                                        value="Male"
-                                        checked={gender === "Male"}
-                                        onChange={(e) => SetGender(e.target.value)}
-                                    />
-                                    <span className="ml-2">Male</span>
-                                </label>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="gender"
-                                        value="Female"
-                                        checked={gender === "Female"}
-                                        onChange={(e) => SetGender(e.target.value)}
-                                    />
-                                    <span className="ml-2">Female</span>
-                                </label>
-                            </div>                          
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="age" className="text-sm text-black float-left w-32">Birth Year</label>
+                            <label htmlFor="gender" className="text-sm text-black float-left w-32">Gender</label>
                             <input type="text" className="border border-blue-700 rounded p-1 text-sm flex-1" required 
-                                value={birthyear} onChange={(e) => SetBirthYear(e.target.value)} />                          
+                                value={gender} onChange={(e) => SetGender(e.target.value)} />                          
                         </div>
                         <div className="mb-4">
-                        <label htmlFor="blood" className="text-sm text-black float-left w-32">Blood Group</label>
-                            <select
-                                className="border border-blue-700 rounded p-1 text-sm flex-1"
-                                value={blood}
-                                onChange={(e) => SetBlood(e.target.value)}
-                            >
-                                <option value="" disabled>Select Blood Group</option>
-                                <option value="A+">A+</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B-">B-</option>
-                                <option value="O+">O+</option>
-                                <option value="O-">O-</option>
-                            </select>                          
+                            <label htmlFor="age" className="text-sm text-black float-left w-32">Age</label>
+                            <input type="text" className="border border-blue-700 rounded p-1 text-sm flex-1" required 
+                                value={age} onChange={(e) => SetAge(e.target.value)} />                          
                         </div>
                         <div className="mb-4">
                             <label htmlFor="phone" className="text-sm text-black float-left w-32">Phone Number</label>
@@ -145,12 +111,8 @@ export default function RegForm() {
                                 {isLoading && <span>Wait...</span>}
                                 {!isLoading && <span>SignUp</span>}
                             </button>
+                            
                         </div>
-                        {passwordMatchError && (
-                            <div>
-                                <p className="text-xl flex items-center justify-center text-red-700">Incorrect Credentials</p>
-                            </div>
-                        )}
                     </form>
                 </div>
             </div>

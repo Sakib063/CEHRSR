@@ -6,8 +6,9 @@ export async function POST(request) {
     const req = await request.json();
     const form_nid = req.nid;
     const streamName = form_nid;
-    // console.log(req);
-    // console.log('streamName', streamName);
+    
+    //  console.log(req);
+    //  console.log('streamName', streamName);
 
     const multichainConfig = {
       host: process.env.HOST,
@@ -33,7 +34,7 @@ export async function POST(request) {
     const chain_response = response.data.result;
     const entry_key = (key) => /^Entry:\d{2}\/\d{2}\/\d{4},\d{2}:\d{2}:\d{2}/.test(key);
     const cleaned_response = chain_response.filter((entry) => entry.keys.some(entry_key));
-    // console.log(cleaned_response);
+    //  console.log(cleaned_response);
     return NextResponse.json({cleaned_response},{status: 200});
   } 
   catch (error) {

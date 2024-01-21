@@ -6,16 +6,24 @@ import { User } from './user'
 export default async function Home() {
   const session = await getServerSession(authOptions)
   return (
+    
     <main>
       <LoginButton />
+      
+      
       <h2>Server Session</h2>
       <pre>{JSON.stringify(session)}</pre>
       <LogoutButton />      
       <h2>Client Call</h2>
       <User />
     </main>
+    
   )
 }
+
+
+
+
 // "use client" ;
 
 // import Image from 'next/image'

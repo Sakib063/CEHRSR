@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/registration/body.tsx", "src/app/registration/page.tsx", "src/app/login/body.jsx", "src/app/login/page.jsx", "src/app/api/login/route.js", "src/app/api/register/route.js", "src/app/component/navbar.tsx", "src/app/api/auth/[...nextauth]/route.ts", "src/libs/prisma.ts", "src/app/page.jsx", "src/app/api/PatientInfo/route.js", "src/app/api/GetData/route.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/registration/body.tsx", "src/app/registration/page.tsx", "src/app/login/body.jsx", "src/app/login/page.jsx", "src/app/api/login/route.js", "src/app/api/register/route.js", "src/app/component/navbar.tsx", "src/app/api/auth/[...nextauth]/route.ts", "src/libs/prisma.ts", "src/app/page.jsx", "src/app/api/PatientInfo/route.js", "src/app/api/GetData/route22.js", "src/app/layout.tsx", "src/app/signin/body.jsx", "src/app/signin/page.jsx", "src/app/dashboard/page.jsx", "src/app/dashboard/Doctor.jsx", "src/app/dashboard/Patient.jsx", "src/app/ConsultationHistory/[ViewEHR]/body.tsx", "src/app/api/getOtpPatient/route.js"],
   "exclude": ["node_modules"]
 }
