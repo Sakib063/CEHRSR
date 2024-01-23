@@ -8,20 +8,19 @@ import Loading from '../loading'
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-
-    
-
-
 export default function ConsultationHistory(){
+    var ehr='';
     const router = useRouter();
-    
     const params = useSearchParams();
-    const id ={nid:params.get('nid')} 
+    // const id ={nid:params.get('nid')} 
+    const id ={nid:'321'} 
     console.log(id);
     let { data: session } = useSession();
     console.log("Session", session?.user?.auth);
 
     const [consultations, setConsultations] = useState([]);
+    const [sumdata, setSumData] = useState([]);
+
 
     const EHRInfo=async(e)=>{
         try {
@@ -34,11 +33,11 @@ export default function ConsultationHistory(){
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
           const data = await response.json();
-          const ehr=data?.cleaned_response;
+          ehr=data?.cleaned_response;
           const consultation_date=ehr.map((item)=>{
-            console.log(item.data.json);
             return(item.data.json);
           }); 
+          setSumData(consultation_date);
           if (consultation_date && consultation_date.length > 0) {
             const consultationsData = consultation_date.map(consultation => ({
                     date: consultation.date,
@@ -56,6 +55,22 @@ export default function ConsultationHistory(){
     const view_ehr=async(key,id)=>{
         router.push(`/ConsultationHistory/ViewEHR?id=${id.nid}&key=${key}`);
     } 
+    console.log('sum',sumdata);
+    const summary=async(e)=>{
+        try{
+          const response = await fetch('/api/SummaryApi',{
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sumdata),
+          });  
+          if(!response.ok){
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+        }
+        catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
 
     useEffect(()=>{
         EHRInfo();
@@ -89,7 +104,6 @@ export default function ConsultationHistory(){
                                     View Details
                                 </button></td>
                             </tr>
-                            
                         ))}
                     </tbody>
                 </table>
@@ -100,7 +114,7 @@ export default function ConsultationHistory(){
                     Back to Previous Page
                 </button>
                 </Link>
-                <button className="bg-blue-500 text-white px-4 py-2 rounded">
+                <button onClick={summary} className="bg-blue-500 text-white px-4 py-2 rounded">
                     Summarized Report
                 </button>
             </div>

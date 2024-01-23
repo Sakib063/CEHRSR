@@ -6,15 +6,12 @@ import { signIn } from "next-auth/react";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import ProjectLogo from "public/logo CEHRSR.png";
+import ProjectLogo from 'next/image'
 
 function LoginBody() {
   const router = useRouter();
-
   const [login, setLogin] = useState(false);
-  
   const [national_id, setnational_id] = useState("");
-
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
 
@@ -25,10 +22,7 @@ function LoginBody() {
       national_id: national_id,
       password: password,
       type: "patient",
-
-
     });
-
 
     if (result?.error) {
         console.log(result.error);
@@ -68,13 +62,7 @@ function LoginBody() {
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           {/* <img className="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company"> */}
-          <Image
-            src={ProjectLogo}
-            height={100}
-            width={90}
-            className="mx-auto w-auto"
-            alt="ProjectLogo"
-          ></Image>
+          <ProjectLogo src="/logo CEHRSR.png" width={100} height={90} alt="project-logo" />
           <div className=" flex sm:mx-auto sm:w-full sm:max-w-sm">
             <button
               type="submit"

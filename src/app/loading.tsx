@@ -2,8 +2,7 @@
 
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import ProjectLogo from 'public/logo CEHRSR.png'
-
+import ProjectLogo from 'next/image'
 
 export default function Loading() {
     const [isLoaded, setIsLoaded] = useState(false)
@@ -20,9 +19,9 @@ export default function Loading() {
                      <div className="relative flex justify-center items-center">
              <div className="absolute animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-blue-500"></div>
             
-            <Image src={ProjectLogo} alt="projectLogo" className="rounded-full h-28 w-28"></Image>
+             <ProjectLogo src="/logo CEHRSR.png" width={50} height={60} alt="project-logo" />
          </div>
-                 </div>
+        </div>
       )}
       
       <div>
