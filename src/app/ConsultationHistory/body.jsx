@@ -55,6 +55,7 @@ export default function ConsultationHistory(){
     const view_ehr=async(key,id)=>{
         router.push(`/ConsultationHistory/ViewEHR?id=${id.nid}&key=${key}`);
     } 
+
     console.log('sum',sumdata);
     const summary=async(e)=>{
         try{
@@ -66,6 +67,8 @@ export default function ConsultationHistory(){
           if(!response.ok){
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
+          const data = await response.json();
+          console.log('summary::',data.summary);
         }
         catch (error) {
             console.error('Error fetching data:', error);

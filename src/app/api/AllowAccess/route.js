@@ -27,14 +27,12 @@ export async function POST(request) {
         });
         const subscribe = await subscribeResponse.data;
 
-        if(subscribe.result){
-            console.log('Subscribe successful');
-            return Response.json({status: 200});
-        } 
-        else{
-            console.error('Error subscribing to Multichain:', subscribe.error);
+        if (!subscribeResponse.ok) {
+            console.error('Failed to subscribe to Multichain. HTTP Status:', subscribeResponse.status);
             return Response.json({ message: 'Failed to subscribe to Multichain' });
         }
+        console.log('donee',subscribeResponse);
+        return Response.json({ status: 200 });
     }
     catch(error){
         console.error('Error processing request:', error);

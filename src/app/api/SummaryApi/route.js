@@ -2,22 +2,24 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 
 export async function POST(request){
-    const res = await request.json();  
-    const newData = res.map((item) => {
-        const { hospital, date, patientAge, doctorName, ...newItem } = item;
-        return newItem;
-      });
-      console.log(newData);
-    const handleGenerateSummary = async () => {
-        try {
-            // Make a POST request to the Flask API
-            const response = await axios.post('http://localhost link for bart', {
-            input_text: newData,
+    try {
+        const res = await request.json();  
+        var newData = res.map((item) => {
+            const { hospital, date, patientAge, doctorName, ...newItem } = item;
+            return newItem;
         });
-            setSummary(response.data.summary);
-        } 
-        catch (error) {
-            console.error('Error generating summary:', error.message);
-        }
-    };
+        newData=JSON.stringify(newData);
+        const cstring = newData.replace(/["\[\]]/g, '');
+        const response = await axios.post('https://1ce5-35-186-172-225.ngrok-free.app/api/data', {
+            input_text: cstring,
+        });
+
+        const summary=response.data.summary;
+        console.log('Response from Flask API:', summary);
+        return NextResponse.json({summary},{status: 200});
+    } 
+    catch (error) {
+        console.error('Error processing request:', error.message);
+        return new Response({ body: 'Internal Server Error', status: 500 });
+    }
 }
