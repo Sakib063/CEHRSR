@@ -6,17 +6,71 @@ import { useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from "next-auth/react";
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+
+
+import { doc } from 'firebase/firestore';
+
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function EHRData(){
+    const router = useRouter();
     let { data: session } = useSession();
-    console.log("Session", session?.user?.name);
-    const patient_name=session?.user?.name;
+    const docName=session?.user?.name;
+    
+   
+    const params = useSearchParams();
+    const id = params.get('id');
+    const key = params.get('key');
+
+    const sendNotification = async (doc, nid) => {
+        try {
+          const otpCollectionRef = collection(db, nid);
+      
+          const data = {
+            notification: `EHR permission revoked from Dr. ${doc}`,
+            timestamp: serverTimestamp(),
+          };
+      
+          await addDoc(otpCollectionRef, data);
+        } catch (error) {
+          console.error("Error adding notification: ", error.message);
+        }
+      };
+    const exit = async (e) => {
+        console.log("Exit");
+        console.log(id);
+        try {
+          const response = await fetch('/api/RemoveAccess', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({id}),
+          });  
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          const data = await response.json();
+          session.user.auth = false
+          sendNotification(docName, id);
+
+          router.replace('/dashboard');
+    
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+
+    if(session?.user?.auth==false){
+        exit();
+        
+    }
+    
+    
+    
     const pdf=useRef();
     // const [loading,setLoading]=useState(false);
     const [date, setDate] = useState('');
     const [age, setAge] = useState('');
+    const [patient_name, setPatientName] = useState('Musarrat Zeba');
     const [doctor_name, setDoctorName] = useState('');
     const [hospital_name, setHospitalName] = useState('');
     const [symptoms, setSymptoms] = useState('');
@@ -29,14 +83,12 @@ export default function EHRData(){
     const [findings, setFindings] = useState('');
     const [comments, setComments] = useState('');
 
-    const params = useSearchParams();
-    const id = params.get('id');
-    const key = params.get('key');
+    
 
     const view_ehr=async(e:any)=>{
         const request={id,key};
         try {
-            const response = await fetch('/api/EHRDetails',{
+            const response = await fetch('/api/EHRDetailsDoc',{
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(request),
@@ -49,6 +101,7 @@ export default function EHRData(){
             // setLoading(true);
             setDate(data?.chain_response?.date);
             setDoctorName(data?.chain_response?.doctorName);
+            setPatientName(data?.chain_response?.patient_name);
             setHospitalName(data?.chain_response?.hospital);
             setDiagnosis(data?.chain_response?.diagnosis);
             setSubDiagnosis(data?.chain_response?.subdiagnosis);
@@ -69,12 +122,12 @@ export default function EHRData(){
     
     const downloadPDF = () => {
         const ehr = pdf.current;
-        html2canvas(ehr).then((canvas)=>{
-            const pdf=new jsPDF('p','mm','a4',true);
-            const width=pdf.internal.pageSize.getWidth();
-            const height=pdf.internal.pageSize.getHeight();
-            pdf.save('Patientcopy.pdf');
-        })
+        // html2canvas(ehr).then((canvas)=>{
+        //     const pdf=new jsPDF('p','mm','a4',true);
+        //     const width=pdf.internal.pageSize.getWidth();
+        //     const height=pdf.internal.pageSize.getHeight();
+        //     pdf.save('Patientcopy.pdf');
+        // })
       };
 
     useEffect(()=>{

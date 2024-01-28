@@ -8,7 +8,7 @@ export async function POST(request) {
     const streamName = req.id;
     var key = req.key;
     key = 'Entry:'+key.replace(' ', '');
-    // console.log(key);
+    console.log(key);
 
     const multichainConfig = {
       host: process.env.HOST,

@@ -3,10 +3,11 @@ import Navbar from './component/navbar'
 import './globals.css'
 import { Providers } from './providers'
 import Loading from './loading'
+import Footer from './component/footer'
 
 
 export const metadata = {
-  title: 'CEHRSR',
+    title: 'CEHRSR',
   description: 'CEHRSR'
 }
 

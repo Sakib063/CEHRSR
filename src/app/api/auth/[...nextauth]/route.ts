@@ -32,6 +32,12 @@ CredentialsProvider({
 
       if (!national_id || !password) {
         return null;
+      };
+
+    
+
+      if (!national_id || !password) {
+        return null;
       }
 
       if (type === 'doctor') {
@@ -60,7 +66,44 @@ CredentialsProvider({
         randomKey: 'Hey cool',
       }  // Adjust User type accordingly
       
+    } 
+    else if(type === 'hospital'){
+      console.log(type);
+      const { national_id, password } = credentials as {
+        national_id: string;
+        password: string;
+      };
+
+      if (!national_id || !password) {
+        return null;
+      }
+
+      const user = await prisma.hospital.findUnique({
+        where: {
+          license_number: national_id,
+        },
+      });
+
+      if (!user) {
+        return null;
+      }
+
+      const isPasswordValid = password === user.password;
+
+      if (!isPasswordValid) {
+        return null;
+      }
+
+      return {
+        id: user.hospital_id + '',
+        license_number: user.license_number,
+        name: user.username,
+        type: "Hospital",
+        randomKey: 'Hey cool',
+      }  // Adjust User type accordingly
     }
+
+    
 
     else if (type === 'patient' ) 
      {
@@ -69,6 +112,9 @@ CredentialsProvider({
         return user;
   }
     }}
+
+    // 
+    
 ),
 
 
@@ -87,7 +133,8 @@ CredentialsProvider({
           id: token.id,
           type: token.type,
           randomKey: token.randomKey,
-          auth: token.auth !== undefined ? token.auth : false,        }
+          auth: false
+        }
       }
     },
     jwt: ({ token, user }) => {
@@ -97,7 +144,7 @@ CredentialsProvider({
           ...token,
           id: u.id,
           type: u.type,
-          auth: u.auth ,
+          auth: false,
           
         }
       }

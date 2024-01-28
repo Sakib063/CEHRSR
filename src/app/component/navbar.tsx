@@ -3,53 +3,86 @@ import Link from 'next/link';
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../api/auth/[...nextauth]/route'
 import { LoginButton, LogoutButton } from '../auth'
-import { User } from '../user'
+import NotificationBell from './notificationBell'
 
+async function Navbar() {
+  const session = await getServerSession(authOptions);
+  const userType = session?.user?.type || null;
+  const userId = session?.user?.id || null;
 
- async function Navbar() {
-  const session  = await getServerSession(authOptions)
-  const type = session?.user?.type || null
+  console.log('hellloooo', userType);
+
   return (
     <div>
-      <header className="px-20 py-8 shadow-lg flex items-center justify-between">
+      <header className="pl-5 md:pl-20 py-4 shadow-lg flex items-center justify-between">
         <div className="flex items-center space-x-2 ml-5">
           <ProjectLogo src="/logo CEHRSR.png" width={50} height={60} alt="project-logo" />
-          <h1 className="text-3xl"><a href="index.html">CEHRSR</a></h1>
+          <h1 className="text-2xl md:text-3xl font-bold">
+            <a href="index.html">CEHRSR</a>
+          </h1>
         </div>
 
-        <nav className="space-x-5 ml-auto mr-5">
+        <nav className="hidden md:flex space-x-5 ml-auto mr-5">
           <ul className="flex space-x-5">
-            <li><a href="#banner">Home</a></li>
-            <li><a href="#ourServices">Our Services</a></li>
-            <li><a href="#faq">FAQ</a></li>
-            <li><a href="#contacts">Contacts</a></li>
+            <li>
+              <a href="/">Home</a>
+            </li>
+            <li>
+              <a href="/#ourServices">Our Services</a>
+            </li>
+            <li>
+              <a href="/#faq">FAQ</a>
+            </li>
+            <li>
+              <a href="/#contacts">Contacts</a>
+            </li>
           </ul>
         </nav>
 
-        {session ? (
-          
-          // Render content for logged-in users
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-          
+        {userType === 'Patient' && session ? (
+        // Render content for logged-in patients with notification bell
+        <div className="flex space-x-2 md:space-x-5">
           <Link href={`/dashboard`}>
-              Dashboard - {(session?.user?.name)}
-            </Link>
-          
-
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 md:py-3 md:px-4 rounded-full">
+              Dashboard - {session?.user?.name}
+            </button>
+          </Link>
+          <NotificationBell userId={session?.user?.id} />
+        </div>
+      ) : userType === 'Doctor' && session ? (
+        // Render content for logged-in doctors with hospital name
+        <div className="flex space-x-2 md:space-x-5">
+          <Link href={`/dashboard`}>
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 md:py-3 md:px-4 rounded-full">
+              Dashboard - Dr. {session?.user?.name}
+            </button>
+          </Link>
+         
+        </div>
+      ) : userType === 'Hospital' && session ? (
+        // Check if the user type is "Hospital" and return session.user.name
+        <Link href={`/dashboard`}>
+        <button className="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 md:py-3 md:px-4 rounded-full">
+          Dashboard - Hospital {session?.user?.name}
+        </button>
+      </Link>
+      ) : (
+        // Render content for users who are not logged in
+        <div className="px-5 md:px-10">
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 md:py-3 md:px-4 rounded-full">
+            <Link href="/signin">Login / Registration</Link>
           </button>
-          
-        ) : (
-          // Render the login/registration button for non-logged-in users
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-            <a href="/signin">Login / Registration</a>
-          </button>
-        )}
-        {!session ? null : ( <div> <LogoutButton/> </div>) }
+        </div>
+      )}
+      {!session ? null : (
+        // Render logout button for logged-in users
+        <div className="mt-1.5 px-3 md:px-6">
+          <LogoutButton />
+        </div>
+      )}
       </header>
     </div>
   );
 }
 
 export default Navbar;
-
-  

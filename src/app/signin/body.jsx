@@ -6,12 +6,15 @@ import { signIn } from "next-auth/react";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import ProjectLogo from 'next/image'
+
 
 function LoginBody() {
   const router = useRouter();
+
   const [login, setLogin] = useState(false);
+  
   const [national_id, setnational_id] = useState("");
+
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
 
@@ -22,7 +25,10 @@ function LoginBody() {
       national_id: national_id,
       password: password,
       type: "patient",
+
+
     });
+
 
     if (result?.error) {
         console.log(result.error);
@@ -61,8 +67,14 @@ function LoginBody() {
   return (
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          {/* <img className="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company"> */}
-          <ProjectLogo src="/logo CEHRSR.png" width={100} height={90} alt="project-logo" />
+          
+          <Image
+            src={'/logo CEHRSR.png'}
+            height={100}
+            width={90}
+            className="mx-auto w-auto"
+            alt="ProjectLogo"
+          ></Image>
           <div className=" flex sm:mx-auto sm:w-full sm:max-w-sm">
             <button
               type="submit"
@@ -79,14 +91,15 @@ function LoginBody() {
               I am a Doctor
             </button>
           </div>
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+          {/* <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
             Sign in to your account
-          </h2>
+          </h2> */}
         </div>
 
         {login ? (
           <div className="w-1/2 border-green-700 border-2 rounded-md mx-auto my-20">
-          <div className="flex items-center justify-center py-10 flex-col">
+            <h1 className="text-center font-extrabold text-green-700 my-6 text-2xl mx-auto">Sign In as Doctor</h1>
+          <div className="flex items-center justify-center py-5 flex-col">
             <form className="py-10 flex-col" onSubmit={submit}>
               <div className="mb-4">
                 <label htmlFor="national_id" className="text-sm text-black float-left w-32">
@@ -121,20 +134,19 @@ function LoginBody() {
                 </button>
               </div>
             </form>
-            <a className="text-green-700" href="/registration">
-              Click here to sign up
-            </a>
+            
             <p>
               <a className="text-green-700" href="">
                 Forgot Password?
               </a>
             </p>
-            {error && <p>Error has occurred. Check credentials</p>}
+            {error && <p className="">Error has occurred. Check credentials</p>}
           </div>
         </div>
         ) : (
           <div className="w-1/2 border-blue-700 border-2 rounded-md mx-auto my-20">
-          <div className="flex items-center justify-center py-10 flex-col">
+          <h1 className="text-center font-extrabold text-blue-700  text-2xl  my-6 mx-auto">Sign In as Patient</h1>
+          <div className="flex items-center justify-center py-5 flex-col">
           <form className="py-10 flex-col" onSubmit={Psubmit}>
               <div className="mb-4">
                   <label htmlFor="national_id" className="text-sm text-black float-left w-32">National ID</label>

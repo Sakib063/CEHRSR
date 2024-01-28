@@ -7,14 +7,14 @@ export async function POST(request) {
     const form_nid = req.nid;
     const streamName = form_nid;
     
-    //  console.log(req);
-    //  console.log('streamName', streamName);
+      console.log(req);
+      
 
     const multichainConfig = {
       host: process.env.HOST,
-      port: //doctor port,
+      port: 10254,
       rpcuser: process.env.RPCUSER,
-      rpcpassword: //doctor password,
+      rpcpassword: '7ZqnLSM4SEFCWTBhGoKgTmaPqg86CHRmEeym8sgRbjno',
     };
 
     // Fetch data from Multichain

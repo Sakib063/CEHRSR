@@ -1,209 +1,130 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { collection, getDocs, addDoc } from "firebase/firestore";
-import { db } from "../firebaseConfig";
-import Image from "next/image";
-import Link from "next/link";
-import updateSession from "../updateSession";
+'use client';
+import React, { Suspense, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import Loading from '../loading';
+import Link from 'next/link';
 
-const PatientHistory = () => {
-  const [data, setData] = useState(false);
-  const [NID, setNID] = useState("");
-  const [OTP, setOTP] = useState("");
-  const [nid, setNid] = useState("");
-  const [id, setId] = useState(false);
-  const [generatedOTP, setGeneratedOTP] = useState("");
+export default function ConsultationHistory() {
   const router = useRouter();
-  const { data: session, update } = useSession();
+  let { data: session } = useSession();
+  if (!session) {
+    router.replace('/dashboard');
+  }
+  const id = { nid: session?.user?.id };
+  const [loading, setLoading] = useState(true);
+  const [sumdata, setSumData] = useState([]);
+
+  const [consultations, setConsultations] = useState([]);
+  
+  const summary=async(e)=>{
+    try{
+      const response = await fetch('/api/SummaryApi',{
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sumdata),
+      });  
+      if(!response.ok){
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log('summary::',data.summary);
+        router.push(`/Summary?id=${id.nid}&summary=${data.summary}`);
+    }
+    catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+  const EHRInfo = async (e) => {
+    try {
+      const response = await fetch('/api/EHRFetch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(id),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      const ehr = data?.cleaned_response;
+      const consultation_date = ehr.map((item) => {
+        console.log(item.data.json);
+        return item.data.json;
+      }).reverse();
+      
+      setSumData(consultation_date);
+
+      if (consultation_date && consultation_date.length > 0) {
+        const consultationsData = consultation_date.map((consultation) => ({
+          date: consultation.date,
+          hospital: consultation.hospital,
+          doctor: consultation.doctorName,
+        })).reverse();
+        setConsultations(consultationsData);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const view_ehr = async (key, id) => {
+    router.push(`/PatientHistory/ViewEHR?id=${id.nid}&key=${key}`);
+  };
 
   useEffect(() => {
-    console.log("Client Session", session?.user?.auth);
-    setData(session?.user?.auth);
-    if (typeof window !== "undefined") {
-      const storedNid = localStorage.getItem("nid");
-      if (storedNid) {
-        setNid(storedNid);
-        
-      }
-    }
-  }, [session]);
-
-  const generateOTP = () => {
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    setGeneratedOTP(otp);
-    console.log("OTP", otp);
-    return otp;
-  };
-
-  const verifyOTP = () => {
-    return OTP === generatedOTP;
-  };
-
-  const sendOtpToFirestore = async (otp, nid) => {
-    try {
-      const otpCollectionRef = collection(db, nid);
-      const collectionSnapshot = await getDocs(otpCollectionRef);
-
-      if (collectionSnapshot.empty) {
-        await addDoc(otpCollectionRef, { otp: otp });
-      } else {
-        await addDoc(otpCollectionRef, { otp: otp });
-      }
-    } catch (error) {
-      console.error("Error adding OTP: ", error.message);
-    }
-  };
-
-  async function MedicalHistory() {
-
-    try {
-      const otp = generateOTP();
-      await sendOtpToFirestore(otp, NID);
-      setId(true);
-      
-    } catch (error) {
-      console.error("Fetch error:", error);
-    }
-
-    setNID("");
-  }
-
-  const handleVerifyOTP = async() => {
-    const request=nid;
-    if (verifyOTP()) {
-      try{
-        const response = await fetch('/api/AllowAccess',{
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(request),
-        });  
-        if(!response.ok){
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-        session.user.auth = true
-        setId(false);
-        let d = updateSession();
-        setData(d);
-        console.log("Client Session", session?.user?.auth);
-      }
-      catch (error) {
-          console.error('Error:', error);
-      }
-    } else {
-      console.log("Invalid OTP");
-    }
-  };
+    EHRInfo();
+  }, []);
 
   return (
-    <div className="">
-      <header className="my-20">
-        <h1 className="text-center font-extrabold text-sky-700 tracking-tight text-6xl">
-          Patient Information
+    <Suspense fallback={<Loading />}>
+      <main className="flex flex-col items-center justify-center">
+        <h1 className="text-3xl font-bold border-b-4 border-blue-500 mt-20 mb-5">
+          Consultation History
         </h1>
-      </header>
-      <div className="bg-white flex justify-center items-center h-auto border-m mt-10">
-        <table>
-          <tbody className="">
-            <tr className="">
-              <td className="text-md px-10 py-5 ">
-                <label
-                  className="block font-serif text-blueGray-600 text-xl font-bold mb-2"
-                  htmlFor="grid-password"
-                >
-                  Enter Patient's NID
-                </label>
-              </td>
-              <td className="text-md px-10 py-5 ">
-                <input
-                  className="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5  w-80 ease-linear transition-all duration-150"
-                  onChange={(e) => {
-                    setNid(e.target.value)
-                    setNID(e.target.value);
-                  }}
-                  type="text"
-                  placeholder="NID no."
-                  value={NID}
-                />
-              </td>
-              <td className="text-md px-10 py-5 ">
-                <button
-                  className=" inline-block w-full rounded bg-primary px-6 pt-2.5 pb-2 text-sm font-medium uppercase leading-normal bg-blue-500 text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 "
-                  onClick={MedicalHistory}
-                >
-                  Search
-                </button>
-              </td>
+        {loading ? <Loading/> : ( 
+        <div className="overflow-auto rounded-lg shadow mb-10">
+        <table className="w-full md:w-auto border">
+          <thead className="bg-blue-200 border-b-2 border-blue-300">
+            <tr className="border border-solid border-l-0 border-r-0">
+              <th className="text-md md:text-lg lg:text-xl px-4 md:px-10 py-3 md:py-5 border">Date</th>
+              <th className="text-md md:text-lg lg:text-xl px-4 md:px-10 py-3 md:py-5 border">Hospital</th>
+              <th className="text-md md:text-lg lg:text-xl px-4 md:px-10 py-3 md:py-5 border">Doctor</th>
+              <th className="text-md md:text-lg lg:text-xl px-4 md:px-10 py-3 md:py-5 border"></th>
             </tr>
-           
-            {id ? (
-              <tr className="">
-                <td className="text-md px-10 py-5 ">
-                  <label
-                    className="block font-serif text-blueGray-600 text-xl font-bold mb-2"
-                    htmlFor="grid-password"
-                  >
-                    Enter OTP
-                  </label>
-                </td>
-                <td className="text-md px-10 py-5 ">
-                  <input
-                    className="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5  w-80 ease-linear transition-all duration-150"
-                    onChange={(e) => {
-                      setOTP(e.target.value);
-                    }}
-                    type="text"
-                    placeholder="OTP"
-                    value={OTP}
-                  />
-                </td>
-                <td className="text-md px-10 py-5 ">
-                  <button
-                    className="inline-block w-full rounded bg-primary px-6 pt-2.5 pb-2 text-sm font-medium uppercase leading-normal bg-blue-500 text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600"
-                    onClick={handleVerifyOTP}
-                  >
-                    Verify OTP
-                  </button>
+          </thead>
+          <tbody>
+            {consultations.map((consultation, index) => (
+              <tr key={index} className="hover:bg-gray-50">
+                <td className="text-sm md:text-md px-4 md:px-8 py-2 md:py-4 border">{consultation.date}</td>
+                <td className="text-sm md:text-md px-4 md:px-8 py-2 md:py-4 border">{consultation.hospital}</td>
+                <td className="text-sm md:text-md px-4 md:px-8 py-2 md:py-4 border">{consultation.doctor}</td>
+                <td onClick={() => view_ehr(consultation.date, id)} className="text-sm md:text-md px-4 md:px-8 py-2 md:py-4 border">
+                  <Link href={`/PatientHistory/ViewEHR?id=${id.nid}&key=${consultation.date}`}>
+                    <button className="bg-blue-500 text-white rounded-full p-2 md:p-3 w-full md:w-40 hover:bg-blue-700 ">
+                      View Details
+                    </button>
+                  </Link>
                 </td>
               </tr>
-            ) : null}
+            ))}
           </tbody>
         </table>
       </div>
-
       
-      {  data ? ( 
-       <div className="flex items-center justify-center">
-       {/* <Link href={`/ConsultationHistory?${nid}`}> */}
-       <button onClick={() => router.push(`/ConsultationHistory?nid=${nid}`)}
-           className="flex flex-col items-center justify-center w-500 h-500 border border-blue-600 text-blue font-bold px-20 py-10 m-10 rounded-md hover:bg-blue-200"
-       >
-           <Image src={"/consulting.png"} alt="consulting" id="consulting" height={200} width={130} />
-
-            Patient's Previous Record
-       </button>
-       {/* </Link> */}
-       <Link href={`/MedicalRecordEntry`}>
-       <button
-           className="flex flex-col items-center justify-center w-400 h-400 border border-blue-600 text-blue font-bold px-20 py-10 m-10 rounded-md hover:bg-blue-200"
-       >
-           <Image src={"/diagnostic.png"} alt="diagnosis" id="diagnosis" height={200} width={130} />
-
-           New Diagnosis Reports 
-       </button>
-       </Link>
-   </div>
-  
-
-
-
-
-     ) : null}
-
-    </div>
+        )}
+        <div className="flex mt-4 py-5">
+          <Link href={'/dashboard'}>
+            <button className="bg-blue-500 text-white px-4 py-2 mr-10 rounded">
+              Back to Previous Page
+            </button>
+          </Link>
+          <button onClick={summary} className="bg-blue-500 text-white px-4 py-2 rounded">
+                    Summarized Report
+                </button>        
+                </div>
+      </main>
+    </Suspense>
   );
-};
-
-export default PatientHistory;
+}

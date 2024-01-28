@@ -33,7 +33,7 @@ export async function POST(request) {
     json: {
       ...res,
       date: formattedDate,
-      hospital: 'test',
+      hospital: 'United Hospital Ltd.',
     }
   };
   console.log('formData', formData);

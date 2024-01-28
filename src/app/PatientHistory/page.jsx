@@ -1,19 +1,9 @@
-'use client';
+import ConsultationHistory from './body';
 
-import React from 'react';
-import PatientHistory from './body';
-
-
-
-
-const SearchPatientHistory = () => {
-  
-  return (
-    <main>
-      <PatientHistory/>
-    </main>
-  );
-};
-
-
-export default SearchPatientHistory;
+export default function Page (){
+    return(
+        <main>
+            <ConsultationHistory/>
+        </main>
+    );
+}
